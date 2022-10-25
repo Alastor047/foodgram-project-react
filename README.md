@@ -122,5 +122,3 @@ SECRET_KEY='секретный ключ Django'
 
 - Документация будет доступна по адресу: [http://localhost/api/docs/](http://localhost/api/docs/)
 
-
-
