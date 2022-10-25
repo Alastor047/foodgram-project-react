@@ -1,62 +1,49 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
-from .validators import validate_username
+from django.db.models import UniqueConstraint
 
 
 class User(AbstractUser):
-    username = models.CharField(
-        max_length=150,
-        unique=True,
-        blank=False,
-        null=False,
-        validators=(validate_username,),
-    )
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = [
+        'username',
+        'first_name',
+        'last_name',
+    ]
     email = models.EmailField(
-        "Электронная почта",
+        'email address',
         max_length=254,
         unique=True,
-        blank=False,
-        null=False,
     )
-    first_name = models.CharField(
-        "Имя пользователя", max_length=150, blank=True
-    )
-    last_name = models.CharField(
-        "Фамилия пользователя", max_length=150, blank=True
-    )
-
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "first_name", "last_name"]
 
     class Meta:
-        verbose_name = "Пользователь"
-        verbose_name_plural = "пользователи"
+        ordering = ['id']
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
     def __str__(self):
-        return self.email
+        return self.username
 
 
-class Follow(models.Model):
+class Subscribe(models.Model):
     user = models.ForeignKey(
         User,
+        related_name='subscriber',
+        verbose_name="Подписчик",
         on_delete=models.CASCADE,
-        related_name="follower",
-        verbose_name="Пользователь",
     )
     author = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
-        related_name="following",
+        related_name='subscribing',
         verbose_name="Автор",
+        on_delete=models.CASCADE,
     )
 
     class Meta:
-        verbose_name = "Подписка"
-        verbose_name_plural = "Подписки"
+        ordering = ['-id']
         constraints = [
-            models.UniqueConstraint(
-                fields=["user", "author"],
-                name="unique_subscription",
-            )
+            UniqueConstraint(fields=['user', 'author'],
+                             name='unique_subscription')
         ]
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
