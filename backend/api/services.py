@@ -13,3 +13,4 @@ def set_shopping_list(user, ingredients):
         for ingredient in ingredients
     ])
     shopping_list += f'\n\nFoodgram ({today():%Y})'
+    return shopping_list
