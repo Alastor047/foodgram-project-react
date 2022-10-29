@@ -1,7 +1,8 @@
-from datetime import today
+from datetime import datetime
 
 
 def set_shopping_list(user, ingredients):
+    today = datetime.today()
     shopping_list = (
         f'Список покупок для: {user}\n\n'
         f'Дата: {today():%Y-%m-%d}\n\n'
