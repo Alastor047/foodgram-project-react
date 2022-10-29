@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -23,6 +21,7 @@ from recipes.models import (
 from api.filters import IngredientFilter, RecipeFilter
 from api.pagination import CustomPagination
 from api.permissions import IsAdminAuthorOrReadOnly, IsAdminOrReadOnly
+from api.services import set_shopping_list
 from api.serializers import (
     IngredientSerializer,
     RecipeReadSerializer,
@@ -113,19 +112,19 @@ class RecipeViewSet(ModelViewSet):
             'ingredient__name',
             'ingredient__measurement_unit'
         ).annotate(amount=Sum('amount'))
-
-        today = datetime.today()
-        shopping_list = (
-            f'Список покупок для: {user.get_full_name()}\n\n'
-            f'Дата: {today:%Y-%m-%d}\n\n'
-        )
-        shopping_list += '\n'.join([
-            f'- {ingredient["ingredient__name"]} '
-            f'({ingredient["ingredient__measurement_unit"]})'
-            f' - {ingredient["amount"]}'
-            for ingredient in ingredients
-        ])
-        shopping_list += f'\n\nFoodgram ({today:%Y})'
+        shopping_list = set_shopping_list(user.get_full_name(), ingredients)
+        #today = datetime.today()
+        #shopping_list = (
+        #    f'Список покупок для: {user.get_full_name()}\n\n'
+        #    f'Дата: {today:%Y-%m-%d}\n\n'
+        #)
+        #shopping_list += '\n'.join([
+        #    f'- {ingredient["ingredient__name"]} '
+        #    f'({ingredient["ingredient__measurement_unit"]})'
+        #    f' - {ingredient["amount"]}'
+        #    for ingredient in ingredients
+        #])
+        #shopping_list += f'\n\nFoodgram ({today:%Y})'
 
         filename = f'{user.username}_shopping_list.txt'
         response = HttpResponse(shopping_list, content_type='text/plain')
