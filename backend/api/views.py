@@ -24,7 +24,6 @@ from api.services import set_shopping_list
 from api.serializers import (
     IngredientSerializer,
     RecipeReadSerializer,
-    RecipeShortSerializer,
     RecipeWriteSerializer,
     TagSerializer
 )
@@ -80,13 +79,14 @@ class RecipeViewSet(ModelViewSet):
         return self.__delete_from(ShoppingCart, request.user, pk)
 
     @staticmethod
-    def __add_to(model, user, pk):
-        if model.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({'errors': 'Рецепт уже добавлен!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+    #я уже десять раз все сломал
+    def __add_to(model, pk, serializer, request):
         recipe = get_object_or_404(Recipe, id=pk)
-        model.objects.create(user=user, recipe=recipe)
-        serializer = RecipeShortSerializer(recipe)
+        model.objects.create(user=request.user, recipe=recipe)
+        serializer = RecipeWriteSerializer(
+            data={'user': request.user.id, 'recipe': recipe.id},
+            context={'request': request}
+        )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod

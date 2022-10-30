@@ -3,13 +3,19 @@ from django.db.models import F
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer
 
-from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
+from recipes.models import (
+    Ingredient,
+    IngredientInRecipe,
+    Recipe,
+    Tag,
+    ShoppingCart
+)
 from users.models import Subscribe
 
 User = get_user_model()
@@ -176,6 +182,17 @@ class RecipeWriteSerializer(ModelSerializer):
             'cooking_time',
         )
 
+    def validate_recipe(self, data):
+        user = data['user']['id']
+        recipe = data['recipe']['id']
+        if Recipe.objects.filter(
+            user__id=user, recipe__id=recipe
+        ).exists():
+            raise serializers.ValidationError(
+                {'errors': 'Рецепт уже добавлен.'}
+            )
+        return data
+
     def validate_ingredients(self, value):
         ingredients = value
         if not ingredients:
@@ -263,3 +280,9 @@ class RecipeShortSerializer(ModelSerializer):
             'image',
             'cooking_time'
         )
+
+
+class ShoppingSerializer(ModelSerializer):
+    class Meta:
+        model = ShoppingCart
+        fields = ('user', 'recipe',)
