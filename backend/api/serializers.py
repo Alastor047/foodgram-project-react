@@ -212,10 +212,10 @@ class RecipeWriteSerializer(ModelSerializer):
         return value
 
     @staticmethod
-    def create_ingredients_amounts(__self, ingredients, recipe):
+    def __create_ingredients_amounts(ingredients, recipe):
         IngredientInRecipe.objects.bulk_create(
             [IngredientInRecipe(
-                ingredient=Ingredient.objects.get_object_or_404(
+                ingredient=get_object_or_404(
                     Ingredient,
                     id=ingredient['id']
                 ),
@@ -229,8 +229,8 @@ class RecipeWriteSerializer(ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        self.create_ingredients_amounts(recipe=recipe,
-                                        ingredients=ingredients)
+        self.__create_ingredients_amounts(recipe=recipe,
+                                          ingredients=ingredients)
         return recipe
 
     def update(self, instance, validated_data):
@@ -240,8 +240,8 @@ class RecipeWriteSerializer(ModelSerializer):
         instance.tags.clear()
         instance.tags.set(tags)
         instance.ingredients.clear()
-        self.create_ingredients_amounts(recipe=instance,
-                                        ingredients=ingredients)
+        self.__create_ingredients_amounts(recipe=instance,
+                                          ingredients=ingredients)
         instance.save()
         return instance
 

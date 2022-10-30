@@ -8,7 +8,7 @@ User = get_user_model()
 
 class Ingredient(models.Model):
     name = models.CharField('Название', max_length=200)
-    measurement_unit = models.CharField('Единица измерения', max_length=5)
+    measurement_unit = models.CharField('Единица измерения', max_length=50)
 
     class Meta:
         verbose_name = 'Ингредиент'
@@ -20,7 +20,7 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField('Название', unique=True, max_length=5)
+    name = models.CharField('Название', unique=True, max_length=50)
     color = models.CharField(
         'Цветовой HEX-код',
         unique=True,
