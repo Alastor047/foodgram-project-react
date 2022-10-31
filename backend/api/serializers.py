@@ -217,14 +217,22 @@ class RecipeWriteSerializer(ModelSerializer):
             tags_list.append(tag)
         return value
 
-    @staticmethod
-    def __create_ingredients_amounts(ingredients, recipe):
+    #@staticmethod
+    #def __create_ingredients_amounts(ingredients, recipe):
+    #    IngredientInRecipe.objects.bulk_create(
+    #        [IngredientInRecipe(
+    #            ingredient=get_object_or_404(
+    #                Ingredient,
+    #                id=ingredient['id']
+    #            ),
+    #            recipe=recipe,
+    #            amount=ingredient['amount']
+    #        ) for ingredient in ingredients]
+    #    )
+    def create_ingredients_amounts(self, ingredients, recipe):
         IngredientInRecipe.objects.bulk_create(
             [IngredientInRecipe(
-                ingredient=get_object_or_404(
-                    Ingredient,
-                    id=ingredient['id']
-                ),
+                ingredient=Ingredient.objects.get(id=ingredient['id']),
                 recipe=recipe,
                 amount=ingredient['amount']
             ) for ingredient in ingredients]
