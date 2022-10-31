@@ -92,20 +92,13 @@ class SubscribeSerializer(CustomUserSerializer):
 class IngredientSerializer(ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = (
-            'name',
-            'measurement_unit',
-        )
+        fields = '__all__'
 
 
 class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
-        fields = (
-            'name',
-            'color',
-            'slug',
-        )
+        fields = '__all__'
 
 
 class RecipeReadSerializer(ModelSerializer):
@@ -217,22 +210,14 @@ class RecipeWriteSerializer(ModelSerializer):
             tags_list.append(tag)
         return value
 
-    #@staticmethod
-    #def __create_ingredients_amounts(ingredients, recipe):
-    #    IngredientInRecipe.objects.bulk_create(
-    #        [IngredientInRecipe(
-    #            ingredient=get_object_or_404(
-    #                Ingredient,
-    #                id=ingredient['id']
-    #            ),
-    #            recipe=recipe,
-    #            amount=ingredient['amount']
-    #        ) for ingredient in ingredients]
-    #    )
-    def create_ingredients_amounts(self, ingredients, recipe):
+    @staticmethod
+    def __create_ingredients_amounts(ingredients, recipe):
         IngredientInRecipe.objects.bulk_create(
             [IngredientInRecipe(
-                ingredient=Ingredient.objects.get(id=ingredient['id']),
+                ingredient=get_object_or_404(
+                    Ingredient,
+                    id=ingredient['id']
+                ),
                 recipe=recipe,
                 amount=ingredient['amount']
             ) for ingredient in ingredients]
