@@ -1,11 +1,11 @@
 from datetime import datetime
-
 from django.db.models import Sum
-from django.http import HttpResponse
+
 from recipes.models import IngredientInRecipe
 
 
-def set_shopping_list(self, request):
+def set_shopping_list(request):
+    user = request.user
     ingredients = IngredientInRecipe.objects.filter(
         recipe__shopping_cart__user=request.user
     ).values(
@@ -14,7 +14,7 @@ def set_shopping_list(self, request):
     ).annotate(amount=Sum('amount'))
     today = datetime.today()
     shopping_list = (
-        f'Список покупок для: {request.user}\n\n'
+        f'Список покупок для: {user.get_full_name()}\n\n'
         f'Дата: {today:%Y-%m-%d}\n\n'
     )
     shopping_list += '\n'.join([
@@ -24,7 +24,4 @@ def set_shopping_list(self, request):
         for ingredient in ingredients
     ])
     shopping_list += f'\n\nFoodgram ({today:%Y})'
-    filename = f'{request.user}_shopping_list.txt'
-    response = HttpResponse(shopping_list, content_type='text/plain')
-    response['Content-Disposition'] = f'attachment; filename={filename}'
-    return response
+    return shopping_list
