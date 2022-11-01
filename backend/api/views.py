@@ -103,4 +103,4 @@ class RecipeViewSet(ModelViewSet):
         user = request.user
         if not user.shopping_cart.exists():
             return Response(status=HTTP_400_BAD_REQUEST)
-        return set_shopping_list(self, request, user)
+        return set_shopping_list(self, request)
