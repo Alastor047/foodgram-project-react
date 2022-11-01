@@ -1,7 +1,16 @@
 from datetime import datetime
+from django.db.models import Sum
+
+from recipes.models import IngredientInRecipe
 
 
-def set_shopping_list(user, ingredients):
+def set_shopping_list(self, request, user):
+    ingredients = IngredientInRecipe.objects.filter(
+        recipe__shopping_cart__user=user
+    ).values(
+        'ingredient__name',
+        'ingredient__measurement_unit'
+    ).annotate(amount=Sum('amount'))
     today = datetime.today()
     shopping_list = (
         f'Список покупок для: {user}\n\n'

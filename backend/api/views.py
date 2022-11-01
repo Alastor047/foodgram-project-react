@@ -1,4 +1,4 @@
-from django.db.models import Sum
+#from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -12,7 +12,7 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from recipes.models import (
     Favourite,
     Ingredient,
-    IngredientInRecipe,
+    #IngredientInRecipe,
     Recipe,
     ShoppingCart,
     Tag
@@ -106,13 +106,13 @@ class RecipeViewSet(ModelViewSet):
         user = request.user
         if not user.shopping_cart.exists():
             return Response(status=HTTP_400_BAD_REQUEST)
-        ingredients = IngredientInRecipe.objects.filter(
-            recipe__shopping_cart__user=request.user
-        ).values(
-            'ingredient__name',
-            'ingredient__measurement_unit'
-        ).annotate(amount=Sum('amount'))
-        shopping_list = set_shopping_list(user, ingredients)
+        #ingredients = IngredientInRecipe.objects.filter(
+        #    recipe__shopping_cart__user=request.user
+        #).values(
+        #    'ingredient__name',
+        #    'ingredient__measurement_unit'
+        #).annotate(amount=Sum('amount'))
+        shopping_list = set_shopping_list(user)
         filename = f'{user.username}_shopping_list.txt'
         response = HttpResponse(shopping_list, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'
