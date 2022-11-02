@@ -112,7 +112,7 @@ class RecipeViewSet(ModelViewSet):
         #    'ingredient__name',
         #    'ingredient__measurement_unit'
         #).annotate(amount=Sum('amount'))
-        shopping_list = set_shopping_list(user)
+        shopping_list = set_shopping_list(user, request)
         filename = f'{user.username}_shopping_list.txt'
         response = HttpResponse(shopping_list, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'
