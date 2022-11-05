@@ -24,4 +24,3 @@
 #    ])
 #    shopping_list += f'\n\nFoodgram ({today():%Y})'
 #    return shopping_list
-#
